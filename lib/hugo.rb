@@ -19,10 +19,15 @@ class Hugo < Thor
   
   desc "build CUSTOMER APP", "Deploy Infrastructure for Customer and Application"
   def build(customer, app)
+    # Create Security Group based on Customer Name
+    
     deploy_rds(customer, app)
+    
+    # Security Group will need to be added to rds for access
+    
+    
     deploy_elb(customer)
     create(customer)
-    #deploy_web_base(customer, app)
     deploy_ec2(customer, app)
     puts "Infrastructure Deployed"
   end
@@ -139,8 +144,8 @@ class Hugo < Thor
       commands << 'sudo chef-solo -c /home/ubuntu/hugo-repos/config/solo.rb -j /home/ubuntu/dna.json'
 
       dna = { :run_list => @app_config['run_list'],
-        :package_list => @app_config['package_list'],
-        :gem_list => @app_config['gem_list'],
+        :package_list => @app_config['package_list'] || {},
+        :gem_list => @app_config['gem_list'] || {},
         :application => app, 
         :customer => customer,
         :database => { 
@@ -192,13 +197,13 @@ class Hugo < Thor
       # end
     
       #  :db_security_groups => [group]
-      loop do
-        check_instance = @rds.describe_db_instances(:db_instance_identifier => instance)
-        if check_instance.DescribeDBInstancesResult.DBInstances.DBInstance.DBInstanceStatus == "available"
-          break
-        end
-        sleep 5
-      end
+      # loop do
+      #   check_instance = @rds.describe_db_instances(:db_instance_identifier => instance)
+      #   if check_instance.DescribeDBInstancesResult.DBInstances.DBInstance.DBInstanceStatus == "available"
+      #     break
+      #   end
+      #   sleep 5
+      # end
     
       dns_name = @rds.describe_db_instances(:db_instance_identifier => instance).DescribeDBInstancesResult.DBInstances.DBInstance.Endpoint.Address
     end
@@ -351,64 +356,5 @@ private
     end
     
   end
-  
-  
-  ### Build Infrastructure
-  # hugo.yaml
-  # database:
-  #  master_user: jackdog
-  #  master_password: bark1byte
-  #  initial_size: 5
-  # web-app:
-  #  default-instances: 2
-  
-  
-  # def deploy_standard(customer, application)
-    # deploy_rds customer application 
-    # deploy_elb customer
-    # create_ec2 customer 
-    # deploy_ec2 customer 
-    # puts elb dns
-  # end
-  
-  # deploy_jasper
-
-  # desc "install APP_NAME", "install one of the available apps"
-  # method_options :force => :boolean, :alias => :string
-  # def install(name)
-  #   user_alias = options[:alias]
-  #   if options.force?
-  #    # do something
-  #   end
-  #   # other code
-  # end
-  #
-  # desc "list [SEARCH]", "list all of the available apps, limited by SEARCH"
-  # def list(search="")
-  #   run "echo Hello World"
-  # end
-  
-  # desc "deploy_web_base CUSTOMER APP", "deploy web-base role to web servers"
-  # def deploy_web_base(customer, app)
-  #   instances = get_instances(customer)    
-  #   instances.each do |i|
-  # 
-  #     @ec2 = AWS::EC2::Base.new(:access_key_id => @@amazon_access_key_id, :secret_access_key => @@amazon_secret_access_key)
-  # 
-  #     puts "instance: #{i.InstanceId}"
-  #     info = @ec2.describe_instances(:instance_id => i.InstanceId)
-  #     puts "info: #{info}"
-  #     uri = info.reservationSet.item[0].instancesSet.item[0].dnsName
-  #     puts "uri: #{uri}"
-  # 
-  #     Net::SSH.start(uri, "ubuntu", :keys => @@ec2_keypair) do |ssh|
-  #       puts ssh.exec!("git clone #{@@hugo_config['git']} ~/hugo-repos")
-  #       puts ssh.exec!("cd hugo-repos && git pull")
-  #       dna = { :run_list => "role[web-base]", :package_list => @@hugo_config['package_list'], :gem_list => @@hugo_config['gem_list'] }
-  #       puts ssh.exec!("echo \"#{dna.to_json.gsub('"','\"')}\" > ~/hugo-repos/dna.json")
-  #       puts ssh.exec!('sudo chef-solo -c /home/ubuntu/hugo-repos/config/solo.rb -j /home/ubuntu/hugo-repos/dna.json')
-  #     end
-  #   end
-  # end
   
 end
