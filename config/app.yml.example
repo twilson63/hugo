@@ -1,0 +1,30 @@
+---
+  run_list:
+    - recipe[apache2::mod_xsendfile]
+    - recipe[s3fs]
+    - role[web-app]
+    - recipe[memcached]
+    - recipe[eirene4]
+  gem_list:
+    - name: sinatra
+    - name: sinatra-xsendfile
+    - name: twilson63-sinatra-formhelpers
+    - name: javan-whenever
+    - name: guid
+    - name: acts-as-taggable-on
+    - name: gunark-jasperserver-client
+    - name: rubyzip
+    - name: rspec
+    - name: rspec-rails
+    
+  package_list:
+    - name: pkg-config 
+    - name: libcurl4-openssl-dev 
+    - name: libfuse-dev 
+    - name: libfuse2     
+    - name: zip
+  app:
+    ssl:
+      gd_bundle: xxxxxxx
+      private: xxxxxxxx
+      public: xxxxxxxx

@@ -1,0 +1,46 @@
+github:
+  url: git@github.com:example
+  publickey: xxxxxx
+  privatekey: xxxxxx
+  
+database:
+  master_username: xxxxxx
+  master_user_password: xxxx
+  default_size: 5
+  db_instance_class: db.m1.small
+availability_zone: us-east-1c
+ec2:
+  default_instances: 1
+git: git://github.com/twilson63/hugo-cookbooks.git
+apache:
+  listen_ports:
+    - 8080
+    - 8443
+package_list:
+  - name: mysql-client
+  - name: libmysqlclient15-dev    
+  - name: libmysql-ruby1.8
+  - name: libexpat1
+  - name: ssl-cert
+  - name: libxml2
+  - name: libxml2-dev
+  - name: libxslt1-dev
+  - name: sqlite3
+  - name: libsqlite3-dev
+  - name: imagemagick
+gem_list:
+  - name: rake
+  - name: fastthread
+  - name: fastercsv
+  - name: nokogiri
+  - name: aws-s3
+  - name: rest-client
+  - name: haml
+  - name: graticule
+  - name: mislav-will_paginate
+  - name: crack
+  - name: prawn
+  - name: right_aws
+  - name: imagesize
+  - name: sqlite3-ruby
+  - name: chronic
