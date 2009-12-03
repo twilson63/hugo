@@ -251,7 +251,13 @@ class Hugo < Thor
   def list_elb(customer)
     begin
       elb = AWS::ELB::Base.new(:access_key_id => @@amazon_access_key_id, :secret_access_key => @@amazon_secret_access_key)
-      puts elb.describe_load_balancers(:load_balancer_names => customer).inspect
+      info = elb.describe_load_balancers(:load_balancer_names => customer)
+      info.DescribeLoadBalancersResult.LoadBalancerDescriptions.member.each do |lb|
+        puts "Name: #{lb.LoadBalancerName}"
+        puts "DNS: #{lb.DNSName}"
+        puts "Created: #{Date.parse(lb.CreatedTime).strftime('%m/%d/%Y')}"
+      end
+
     rescue AWS::Error => e
       puts e.message
     end
@@ -261,7 +267,10 @@ class Hugo < Thor
   def list_rds(customer)
     begin
       rds = AWS::RDS::Base.new(:access_key_id => @@amazon_access_key_id, :secret_access_key => @@amazon_secret_access_key)
-      puts rds.describe_db_instances(:db_instance_identifier => customer).inspect
+      info = rds.describe_db_instances(:db_instance_identifier => customer)
+      puts "Address: " + info.DescribeDBInstancesResult.DBInstances.DBInstance.Endpoint.Address
+      puts "Port: " + info.DescribeDBInstancesResult.DBInstances.DBInstance.Endpoint.Port
+      
     rescue AWS::Error => e
       puts e.message
     end
